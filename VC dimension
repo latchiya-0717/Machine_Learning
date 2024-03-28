@@ -5,6 +5,6 @@ In machine learning, the Vapnik-Chervonenkis (VC) dimension is a crucial concept
 
 Imagine a model class like linear regression or decision trees. The VC dimension helps us understand how well these models can fit various data patterns. A higher VC dimension generally indicates a more complex model that can capture intricate relationships, while a lower VC dimension suggests a simpler model with less flexibility.
 
-Formal Definition: Shattering Sets
+Formal Definition: Shattering Sets.
 
 The VC dimension is formally defined in terms of "shattering" sets of data points. A model class can shatter a set of points if it can perfectly classify them for all possible labelings.
