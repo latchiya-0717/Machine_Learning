@@ -3,8 +3,8 @@ import pandas as pd
 
 # Load data
 @st.cache_data
-def load_data():
-    data = pd.read_csv("dataset/usa_county_wise.csv")
+def load_data(dataset_file):
+    data = pd.read_csv(dataset_file)
     return data
 
 # Simulate symptoms based on confirmed cases
@@ -45,31 +45,35 @@ def calculate_probabilities(data, symptoms, test_result):
 def main():
     st.title("COVID-19 Diagnosis using Bayesian Network")
 
-    # Load data
-    data = load_data()
+    # Ask for dataset file
+    dataset_file = st.file_uploader("Upload dataset file", type=["csv"])
 
-    # Simulate symptoms
-    data = simulate_symptoms(data)
+    if dataset_file is not None:
+        # Load data
+        data = load_data(dataset_file)
 
-    # Show the dataset
-    st.subheader("USA County Wise Dataset")
-    st.write(data)
+        # Simulate symptoms
+        data = simulate_symptoms(data)
 
-    # Inputs
-    st.sidebar.title("Enter Symptoms")
-    fever = st.sidebar.radio("Fever", ['Yes', 'No'])
-    cough = st.sidebar.radio("Cough", ['Yes', 'No'])
-    fatigue = st.sidebar.radio("Fatigue", ['Yes', 'No'])
-    breathing_difficulty = st.sidebar.radio("Breathing Difficulty", ['Yes', 'No'])
+        # Show the dataset
+        st.subheader("Dataset")
+        st.write(data)
 
-    # Predict
-    symptoms = {'Fever': fever, 'Cough': cough, 'Fatigue': fatigue, 'Breathing Difficulty': breathing_difficulty}
-    test_result = 'Positive'
-    probability = calculate_probabilities(data, symptoms, test_result)
+        # Inputs
+        st.sidebar.title("Enter Symptoms")
+        fever = st.sidebar.radio("Fever", ['Yes', 'No'])
+        cough = st.sidebar.radio("Cough", ['Yes', 'No'])
+        fatigue = st.sidebar.radio("Fatigue", ['Yes', 'No'])
+        breathing_difficulty = st.sidebar.radio("Breathing Difficulty", ['Yes', 'No'])
 
-    # Show prediction
-    st.subheader("Probability of Positive Test Result given Symptoms")
-    st.write(probability)
+        # Predict
+        symptoms = {'Fever': fever, 'Cough': cough, 'Fatigue': fatigue, 'Breathing Difficulty': breathing_difficulty}
+        test_result = 'Positive'
+        probability = calculate_probabilities(data, symptoms, test_result)
+
+        # Show prediction
+        st.subheader("Probability of Positive Test Result given Symptoms")
+        st.write(probability)
 
 if __name__ == "__main__":
     main()
