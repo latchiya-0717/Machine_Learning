@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load data
@@ -57,10 +56,11 @@ def kmeans_algorithm(data, num_clusters, max_iterations=100):
 
 # Plot clusters
 def plot_clusters(data, clusters, title):
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sns.scatterplot(data=data, x=data.columns[0], y=data.columns[1], hue=clusters, palette='viridis', legend='full', ax=ax)
-    ax.set_title(title)
-    st.pyplot(fig)
+    # Adding a scatter plot using Seaborn
+    st.subheader(title)
+    fig = sns.scatterplot(data=data, x=data.columns[0], y=data.columns[1], hue=clusters, palette='viridis', legend='full')
+    # Return the figure so it can be displayed in Streamlit
+    return fig.figure
 
 # Streamlit web app
 def main():
@@ -87,11 +87,13 @@ def main():
 
             # Clustering using EM algorithm
             em_labels = em_algorithm(normalized_data.values, num_clusters)
-            plot_clusters(data.iloc[:, :2], em_labels, "EM Algorithm Clustering")
+            em_fig = plot_clusters(data.iloc[:, :2], em_labels, "EM Algorithm Clustering")
+            st.pyplot(em_fig)
 
             # Clustering using k-means algorithm
             kmeans_labels = kmeans_algorithm(normalized_data.values, num_clusters)
-            plot_clusters(data.iloc[:, :2], kmeans_labels, "k-Means Algorithm Clustering")
+            kmeans_fig = plot_clusters(data.iloc[:, :2], kmeans_labels, "k-Means Algorithm Clustering")
+            st.pyplot(kmeans_fig)
         else:
             st.error("Please ensure that your dataset has at least 2 columns.")
 
