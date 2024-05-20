@@ -1,3 +1,5 @@
+import streamlit as st
+
 # Define nodes in the Bayesian network
 class Node:
     def __init__(self, name, states):
@@ -33,23 +35,42 @@ class BayesianNetwork:
                 probabilities[node_name] = prob_sum
         return probabilities
 
-# Define default input data
-default_evidence = {"Fever": "High", "Cough": "Severe"}
+# Function to run inference and display results
+def run_inference(network, evidence):
+    result = network.infer(evidence)
+    return result["Corona"]
 
-# Define nodes and their probabilities
-fever_node = Node("Fever", ["Low", "High"])
-cough_node = Node("Cough", ["Mild", "Severe"])
-corona_node = Node("Corona", ["Negative", "Positive"])
+# Streamlit web application
+def main():
+    st.title("Corona Infection Probability Calculator")
+    st.write("Enter symptoms below to calculate the probability of a Corona infection.")
 
-fever_node.add_parent(corona_node, {"Negative": 0.1, "Positive": 0.9})
-cough_node.add_parent(corona_node, {"Negative": 0.2, "Positive": 0.8})
+    # Create input fields for symptoms
+    fever = st.selectbox("Fever", ["Low", "High"], index=1)
+    cough = st.selectbox("Cough", ["Mild", "Severe"], index=1)
 
-# Add nodes to the Bayesian network
-network = BayesianNetwork()
-network.add_node(fever_node)
-network.add_node(cough_node)
-network.add_node(corona_node)
+    # Define default evidence
+    default_evidence = {"Fever": fever, "Cough": cough}
 
-# Perform inference with default input data
-result = network.infer(default_evidence)
-print("Probability of Corona infection:", result["Corona"])
+    # Define nodes and their probabilities
+    fever_node = Node("Fever", ["Low", "High"])
+    cough_node = Node("Cough", ["Mild", "Severe"])
+    corona_node = Node("Corona", ["Negative", "Positive"])
+
+    fever_node.add_parent(corona_node, {"Negative": 0.1, "Positive": 0.9})
+    cough_node.add_parent(corona_node, {"Negative": 0.2, "Positive": 0.8})
+
+    # Add nodes to the Bayesian network
+    network = BayesianNetwork()
+    network.add_node(fever_node)
+    network.add_node(cough_node)
+    network.add_node(corona_node)
+
+    # Perform inference with user input
+    probability = run_inference(network, default_evidence)
+
+    # Display result
+    st.write(f"Probability of Corona infection: {probability}")
+
+if __name__ == "__main__":
+    main()
