@@ -46,8 +46,8 @@ def main():
     st.write("Enter symptoms below to calculate the probability of a Corona infection.")
 
     # Create input fields for symptoms
-    fever = st.selectbox("Fever", ["Low", "High"], index=1)
-    cough = st.selectbox("Cough", ["Mild", "Severe"], index=1)
+    fever = st.radio("Fever", ["Low", "High"])
+    cough = st.radio("Cough", ["Mild", "Severe"])
 
     # Define default evidence
     default_evidence = {"Fever": fever, "Cough": cough}
