@@ -10,7 +10,7 @@ class Node:
 
     def add_parent(self, parent, probabilities):
         self.parents.append(parent)
-        self.probabilities[parent.name] = probabilities
+        self.probabilities[tuple(parent)] = probabilities
 
     def get_probability(self, parent_values):
         return self.probabilities[parent_values]
@@ -29,7 +29,7 @@ class BayesianNetwork:
             if node_name not in evidence:
                 prob_sum = 0
                 for parent_values, probability in node.probabilities.items():
-                    parent_probs = tuple([evidence[parent] for parent in node.parents])
+                    parent_probs = tuple([evidence[parent] for parent in parent_values])
                     if parent_probs == parent_values:
                         prob_sum += probability
                 probabilities[node_name] = prob_sum
@@ -57,8 +57,8 @@ def main():
     cough_node = Node("Cough", ["Mild", "Severe"])
     corona_node = Node("Corona", ["Negative", "Positive"])
 
-    fever_node.add_parent(corona_node, {("Negative",): 0.1, ("Positive",): 0.9})
-    cough_node.add_parent(corona_node, {("Negative",): 0.2, ("Positive",): 0.8})
+    fever_node.add_parent("Corona", {"Negative": 0.1, "Positive": 0.9})
+    cough_node.add_parent("Corona", {"Negative": 0.2, "Positive": 0.8})
 
     # Add nodes to the Bayesian network
     network = BayesianNetwork()
