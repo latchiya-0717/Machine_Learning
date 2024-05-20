@@ -1,79 +1,55 @@
-import streamlit as st
-import pandas as pd
+# Define nodes in the Bayesian network
+class Node:
+    def __init__(self, name, states):
+        self.name = name
+        self.states = states
+        self.parents = []
+        self.probabilities = {}
 
-# Load data
-@st.cache_data
-def load_data(dataset_file):
-    data = pd.read_csv(dataset_file)
-    return data
+    def add_parent(self, parent, probabilities):
+        self.parents.append(parent)
+        self.probabilities[parent.name] = probabilities
 
-# Simulate symptoms based on confirmed cases
-def simulate_symptoms(data):
-    # Assuming a simple rule: If confirmed cases > 0, then fever and cough are present
-    data['Fever'] = data['Confirmed'].apply(lambda x: 'Yes' if x > 0 else 'No')
-    data['Cough'] = data['Confirmed'].apply(lambda x: 'Yes' if x > 0 else 'No')
-    # Assuming Fatigue and Breathing Difficulty are random
-    data['Fatigue'] = ['Yes' if i % 2 == 0 else 'No' for i in range(len(data))]
-    data['Breathing Difficulty'] = ['Yes' if i % 3 == 0 else 'No' for i in range(len(data))]
-    return data
+    def get_probability(self, parent_values):
+        return self.probabilities[parent_values]
 
-# Calculate probabilities
-def calculate_probabilities(data, symptoms, test_result):
-    total_cases = len(data)
-    symptomatic_cases = len(data[(data['Fever'] == symptoms['Fever']) & 
-                                 (data['Cough'] == symptoms['Cough']) & 
-                                 (data['Fatigue'] == symptoms['Fatigue']) &
-                                 (data['Breathing Difficulty'] == symptoms['Breathing Difficulty'])])
-    positive_test_cases = len(data[(data['Confirmed'] > 0)])
-    
-    # Calculate probabilities
-    p_symptomatic_given_positive = len(data[(data['Confirmed'] > 0) & 
-                                            (data['Fever'] == symptoms['Fever']) & 
-                                            (data['Cough'] == symptoms['Cough']) & 
-                                            (data['Fatigue'] == symptoms['Fatigue']) &
-                                            (data['Breathing Difficulty'] == symptoms['Breathing Difficulty'])]) / positive_test_cases
-    
-    p_positive = positive_test_cases / total_cases
-    p_symptomatic = symptomatic_cases / total_cases
-    
-    # Bayes' Theorem
-    p_positive_given_symptomatic = (p_symptomatic_given_positive * p_positive) / p_symptomatic
-    
-    return p_positive_given_symptomatic
+# Define the Bayesian network structure
+class BayesianNetwork:
+    def __init__(self):
+        self.nodes = {}
 
-# Streamlit web app
-def main():
-    st.title("COVID-19 Diagnosis using Bayesian Network")
+    def add_node(self, node):
+        self.nodes[node.name] = node
 
-    # Ask for dataset file
-    dataset_file = st.file_uploader("Upload dataset file", type=["csv"])
+    def infer(self, evidence):
+        probabilities = {}
+        for node_name, node in self.nodes.items():
+            if node_name not in evidence:
+                prob_sum = 0
+                for parent_values, probability in node.probabilities.items():
+                    parent_probs = [evidence[parent] for parent in node.parents]
+                    if parent_probs == list(parent_values):
+                        prob_sum += probability
+                probabilities[node_name] = prob_sum
+        return probabilities
 
-    if dataset_file is not None:
-        # Load data
-        data = load_data(dataset_file)
+# Define default input data
+default_evidence = {"Fever": "High", "Cough": "Severe"}
 
-        # Simulate symptoms
-        data = simulate_symptoms(data)
+# Define nodes and their probabilities
+fever_node = Node("Fever", ["Low", "High"])
+cough_node = Node("Cough", ["Mild", "Severe"])
+corona_node = Node("Corona", ["Negative", "Positive"])
 
-        # Show the dataset
-        st.subheader("Dataset")
-        st.write(data)
+fever_node.add_parent(corona_node, {"Negative": 0.1, "Positive": 0.9})
+cough_node.add_parent(corona_node, {"Negative": 0.2, "Positive": 0.8})
 
-        # Inputs
-        st.sidebar.title("Enter Symptoms")
-        fever = st.sidebar.radio("Fever", ['Yes', 'No'])
-        cough = st.sidebar.radio("Cough", ['Yes', 'No'])
-        fatigue = st.sidebar.radio("Fatigue", ['Yes', 'No'])
-        breathing_difficulty = st.sidebar.radio("Breathing Difficulty", ['Yes', 'No'])
+# Add nodes to the Bayesian network
+network = BayesianNetwork()
+network.add_node(fever_node)
+network.add_node(cough_node)
+network.add_node(corona_node)
 
-        # Predict
-        symptoms = {'Fever': fever, 'Cough': cough, 'Fatigue': fatigue, 'Breathing Difficulty': breathing_difficulty}
-        test_result = 'Positive'
-        probability = calculate_probabilities(data, symptoms, test_result)
-
-        # Show prediction
-        st.subheader("Probability of Positive Test Result given Symptoms")
-        st.write(probability)
-
-if __name__ == "__main__":
-    main()
+# Perform inference with default input data
+result = network.infer(default_evidence)
+print("Probability of Corona infection:", result["Corona"])
