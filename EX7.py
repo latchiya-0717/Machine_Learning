@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Clustering Data
 cluster_data = np.array([
@@ -56,6 +57,19 @@ def kmeans(X, k, max_iters=100):
                 centroids[j] = points.mean(axis=0)
     return centroids, clusters
 
+# Visualization function
+def plot_clusters(data, centroids, clusters, title):
+    plt.figure(figsize=(8, 6))
+    for i in range(len(centroids)):
+        points = data[clusters == i]
+        plt.scatter(points[:, 0], points[:, 1], label=f'Cluster {i}')
+    plt.scatter(centroids[:, 0], centroids[:, 1], s=300, c='red', marker='x', label='Centroids')
+    plt.title(title)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.legend()
+    st.pyplot(plt.gcf())
+
 # Streamlit Interface
 st.title('Clustering Using EM Algorithm and k-Means')
 
@@ -77,6 +91,13 @@ if st.button('Cluster Data'):
     st.write(kmeans_centroids)
     st.write("k-Means algorithm clusters:")
     st.write(kmeans_clusters)
+
+    st.header('Cluster Visualization')
+    st.write('**EM Algorithm Clusters**')
+    plot_clusters(cluster_data, em_means, em_clusters, 'EM Algorithm Clusters')
+
+    st.write('**k-Means Algorithm Clusters**')
+    plot_clusters(cluster_data, kmeans_centroids, kmeans_clusters, 'k-Means Algorithm Clusters')
 
     st.write("Comparison of EM and k-Means clustering:")
     st.write("EM clusters:", em_clusters)
