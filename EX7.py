@@ -68,16 +68,29 @@ if st.button('Cluster Data'):
     em_means, em_clusters = em_algorithm(cluster_data, num_clusters)
     kmeans_centroids, kmeans_clusters = kmeans(cluster_data, num_clusters)
 
-    st.write("EM algorithm means:")
-    st.write(em_means)
-    st.write("EM algorithm clusters:")
-    st.write(em_clusters)
+    col1, col2 = st.columns(2)
 
-    st.write("k-Means algorithm centroids:")
-    st.write(kmeans_centroids)
-    st.write("k-Means algorithm clusters:")
-    st.write(kmeans_clusters)
+    with col1:
+        st.subheader("EM Algorithm Results")
+        st.write("Means:")
+        st.write(em_means)
+        st.write("Clusters:")
+        st.write(em_clusters)
 
-    st.write("Comparison of EM and k-Means clustering:")
-    st.write("EM clusters:", em_clusters)
-    st.write("k-Means clusters:", kmeans_clusters)
+    with col2:
+        st.subheader("k-Means Algorithm Results")
+        st.write("Centroids:")
+        st.write(kmeans_centroids)
+        st.write("Clusters:")
+        st.write(kmeans_clusters)
+
+    st.header("Comparison of EM and k-Means clustering")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.write("EM clusters:")
+        st.write(em_clusters)
+
+    with col2:
+        st.write("k-Means clusters:")
+        st.write(kmeans_clusters)
