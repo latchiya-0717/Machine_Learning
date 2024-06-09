@@ -57,6 +57,7 @@ def kmeans(X, k, max_iters=100):
     return centroids, clusters
 
 # Streamlit Interface
+st.title("BYTES BRIGADES")
 st.title('Clustering Using EM Algorithm and k-Means')
 
 st.header('Clustering Data')
