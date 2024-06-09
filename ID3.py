@@ -57,7 +57,9 @@ def classify(tree, instance):
 
 def main():
     """Main function to run the Streamlit app."""
-
+  
+  
+    st.title("BYTES BRIGADES")
     st.title("Interactive ID3 Decision Tree")
 
     st.write("Upload a CSV dataset with a header row.")
