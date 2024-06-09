@@ -44,6 +44,7 @@ def main():
   """
   Streamlit app for the Candidate Elimination Algorithm with data preview.
   """
+  st.title("BYTES BRIGADES")
   st.title("Enhanced Candidate Elimination Algorithm")
   st.write("This interactive app demonstrates the Candidate Elimination Algorithm for concept learning with data preview and more.")
   uploaded_file = st.file_uploader("Upload CSV data:", type="csv")
