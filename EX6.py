@@ -62,6 +62,7 @@ y = data[:, -1]
 probabilities = calculate_probabilities(X, y)
 
 # Streamlit Interface
+st.title("BYTES BRIGADES")
 st.title('COVID-19 Bayesian Network Diagnosis')
 
 st.header('Input Symptoms')
